@@ -1,5 +1,5 @@
 import {utils} from './utils.js'
-import {eventHandler} from './eventHandler.js'
+import { rLocation } from './macros.js'
 
 var canvasWidth = 800
 var canvasHeight = 600
@@ -14,8 +14,7 @@ let oldTimeStamp = 0;
 let fps;
 
 let mouse = {
-    x : 0,
-    y : 0,
+    coords : {x : NaN, y : NaN},
 }
 
 window.addEventListener('DOMContentLoaded', function (e) {           
@@ -26,9 +25,24 @@ window.addEventListener('DOMContentLoaded', function (e) {
 function startGame() {
     gameCanvas = new GameCanvas('canvas')
     gameCanvas.start()
+
+    // enable mouse movement detection
+    document.getElementById('canvas').addEventListener('mousemove', function(event) {
+        mouse.coords = utils.getMouseCoords(event, gameCanvas);
+    })
+
+
+    document.getElementById('canvas').addEventListener('mouseleave', function(event) {
+        mouse.coords.x = NaN;
+        mouse.coords.y = NaN;
+    })
+
     
     starfield = new StarField(100, 80);
-    hero = new Rocket(50, 50);
+    
+    hero = new Rocket({speed : 400 });
+    hero.follow_mouse = true;
+    hero.setOrigin(rLocation.center);
 
     drawQueue.addItem(starfield);
     drawQueue.addItem(hero);
@@ -80,10 +94,10 @@ function gameLoop(timeStamp) {
     //console.log(fps);
 
     // process input
-    console.log(mouse.x + ", " + mouse.y);
     
     // update game
     starfield.update(secondsPassed);
+    hero.update(secondsPassed);
 
     // render
     updateCanvas();
@@ -99,6 +113,9 @@ function updateCanvas()
     
     drawQueue.drawAll();
 }
+
+
+
 
 function StarParticle() {
     this.x = utils.getRandomInt(0, canvasWidth);
@@ -142,14 +159,46 @@ function StarField(numStars, speed)
     }
 }
 
-function Rocket(start_x, start_y)
+function Rocket({start_x = 50, start_y = 50, width = 50, height = 50, speed = 200} = {})
 {
-    this.x = start_x;
-    this.y = start_y;
+    this.coords = { x : start_x, y : start_y}
+    this.drawOffset = { dx : 0, dy : 0}
+    this.origin = rLocation.topLeft;
+
+    this.width = width;
+    this.height = height;
+
+    this.speed = speed;
+    this.follow_mouse = false;
 
     this.draw = function() {
         var ctx = gameCanvas.context;
+        var drawX = this.coords.x + this.drawOffset.dx;
+        var drawY = this.coords.y + this.drawOffset.dy;
+        
         ctx.fillStyle = 'red';
-        ctx.fillRect(this.x, this.y, 50, 50);
+        ctx.fillRect(drawX, drawY, this.width, this.height);
     }
+
+    this.update = function(deltaTime) {
+
+        if (this.follow_mouse && utils.coordsExist(mouse.coords))
+        {
+            if (utils.getEuclideanDistance(this.coords.x, this.coords.y, mouse.coords.x, mouse.coords.y) < 5) {
+                this.coords.x = mouse.coords.x;
+                this.coords.y = mouse.coords.y
+            } else {
+                var uv = utils.getUnitVector(this.coords.x, this.coords.y, mouse.coords.x, mouse.coords.y)
+                this.coords.x += uv.dx * deltaTime * speed;
+                this.coords.y += uv.dy * deltaTime * speed;
+            }
+        }
+    }
+
+    this.setOrigin = function(nRLocation) {
+        this.coords = utils.adjustOrigin(this.coords.x, this.coords.y, this.width, this.height, this.origin, nRLocation);
+        this.origin = nRLocation
+        this.drawOffset = utils.adjustDrawOffset(this.width, this.height, this.origin);
+    }
+
 }
