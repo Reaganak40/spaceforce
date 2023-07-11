@@ -21,7 +21,7 @@ export function Rocket({start_x = 50, start_y = 50, width = 42, height = 65, spe
     this.image = new Image(this.width, this.height);
     this.image.src = this.texture.filepath;
     this.imageCoords = { sx : 0, sy: 0}
-    this.textureFrame = new TextureFrame(2, this.texture.count);
+    this.textureFrame = new TextureFrame(2.5, this.texture.numFrames);
 
 
     this.draw = function() {
@@ -45,17 +45,16 @@ export function Rocket({start_x = 50, start_y = 50, width = 42, height = 65, spe
                 }
             } else {
                 var uv = utils.getUnitVector(this.coords.x, this.coords.y, globals.mouse.coords.x, globals.mouse.coords.y)
-                this.coords.x += uv.dx * deltaTime * speed;
+                this.coords.x += uv.dx * deltaTime * this.speed;
                 
                 if (!this.restrict_y) {
-                    this.coords.y += uv.dy * deltaTime * speed;
+                    this.coords.y += uv.dy * deltaTime * this.speed;
                 }
             }
         }
 
         // animate the rocket
         if (this.textureFrame.update(deltaTime)) {
-            console.log("update");
             this.imageCoords.sx = this.textureFrame.frame * this.texture.width;
         }
     }

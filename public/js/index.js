@@ -5,11 +5,11 @@ import { GameCanvas } from './gameCanvas.js'
 
 import { StarField } from './stars.js'
 import { Rocket } from './rocket.js'
+import { AsteroidBelt } from './asteroid.js'
 
-
-let gameCanvas;
 var starfield;
 var hero;
+var asteroidBelt;
 
 let secondsPassed;
 let oldTimeStamp = 0;
@@ -42,7 +42,11 @@ function startGame() {
     hero.follow_mouse = true;
     hero.restrict_y = true;
 
+    asteroidBelt = new AsteroidBelt({maxAsteroids : 30,  frequency : 0.5, minSpeed : 100, maxSpeed : 600});
+    asteroidBelt.spawnEpoch = 0.7
+
     drawQueue.addItem(starfield);
+    drawQueue.addItem(asteroidBelt);
     drawQueue.addItem(hero);
 
     window.requestAnimationFrame(gameLoop);
@@ -78,6 +82,7 @@ function gameLoop(timeStamp) {
     
     // update game
     starfield.update(secondsPassed);
+    asteroidBelt.update(secondsPassed);
     hero.update(secondsPassed);
 
     // render
@@ -93,5 +98,4 @@ function updateCanvas()
     ctx.clearRect(0, 0, globals.canvasWidth, globals.canvasHeight);
     
     drawQueue.drawAll();
-    //drawImageActualSize()
 }

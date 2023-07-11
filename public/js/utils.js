@@ -110,4 +110,11 @@ export var utils = {
         return { dx : 0, dy : 0} 
     },
 
+    removeItemFromArray(arr, index) {
+        if (index > -1) {
+            arr.splice(index, 1);
+        }
+        return arr;
+    }
+
 }
