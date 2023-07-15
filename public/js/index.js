@@ -1,11 +1,11 @@
 import {utils} from './utils.js'
 import { globals } from './globals.js'
-import { rLocation } from './macros.js'
+import { rLocation, trajectory } from './macros.js'
 import { GameCanvas } from './gameCanvas.js'
 
+import { Hero } from './hero.js'
 import { StarField } from './stars.js'
-import { Rocket } from './rocket.js'
-import { AsteroidBelt } from './asteroid.js'
+import { Asteroid, AsteroidBelt } from './asteroid.js'
 
 var starfield;
 var hero;
@@ -36,13 +36,10 @@ function startGame() {
     })
 
     starfield = new StarField(100, 80);
-    
-    hero = new Rocket({speed : 700, start_y : (globals.canvasHeight * 0.85)});
-    hero.setOrigin(rLocation.center);
-    hero.follow_mouse = true;
-    hero.restrict_y = true;
 
-    asteroidBelt = new AsteroidBelt({maxAsteroids : 30,  frequency : 0.5, minSpeed : 100, maxSpeed : 600});
+    hero = new Hero();
+
+    asteroidBelt = new AsteroidBelt({maxAsteroids : 60,  frequency : 0.95, minSpeed : 100, maxSpeed : 200});
     asteroidBelt.spawnEpoch = 0.7
 
     drawQueue.addItem(starfield);

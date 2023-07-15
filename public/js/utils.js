@@ -1,4 +1,5 @@
 import { rLocation } from "./macros.js"
+import { globals } from "./globals.js";
 
 export var utils = {
     
@@ -14,16 +15,16 @@ export var utils = {
     coordsExist: function(coords) {
         return !(isNaN(coords.x) || isNaN(coords.y));
     },
-    getUnitVector : function(x1, y1, x2, y2) {
-        var theta = Math.atan2(y2-y1, x2-x1)
+    getUnitVector : function(point1 = {x : 0, y : 0}, point2 = {x : 0, y : 0}) {
+        var theta = Math.atan2(point2.y-point1.y, point2.x-point1.x)
         return {
             dx : Math.cos(theta),
             dy : Math.sin(theta)
         }
     },
-    getEuclideanDistance : function(x1, y1, x2, y2)
+    getEuclideanDistance : function(point1 = {x : 0, y : 0}, point2 = {x : 0, y : 0})
     {
-        return Math.hypot(x2-x1, y2-y1)
+        return Math.hypot(point2.x-point1.x, point2.y-point1.y);
     },
     getCoordsString: function(x, y) {
         return x + ", " + y
@@ -110,11 +111,19 @@ export var utils = {
         return { dx : 0, dy : 0} 
     },
 
-    removeItemFromArray(arr, index) {
+    removeItemFromArray : function(arr, index) {
         if (index > -1) {
             arr.splice(index, 1);
         }
         return arr;
+    },
+
+    degreesToRadians : function(degrees) {
+        return degrees * (Math.PI / 180);
+    },
+
+    getFittedRangeX(width) {
+        return { min : width/2, max : globals.canvasWidth - (width/2)}; 
     }
 
 }

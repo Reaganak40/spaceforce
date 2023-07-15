@@ -10,7 +10,8 @@ export var globals = {
     },
 
     textures : {
-        "rocket" : new Texture("../img/rocket.png", 42, 65, 3)
+        "rocket" : new Texture("../img/rocket.png", 42, 65, 3),
+        "asteroid1" : new Texture("../img/asteroid1.png", 44, 40, 1),
     }
 
 }
