@@ -3,10 +3,9 @@ import { globals } from './globals.js';
 import { rLocation } from './macros.js';
 import { TextureFrame } from './texture.js'
 
-export function Sprite(
-    {   start_x = 0, start_y = 0,
-        textureID = "asteroid1", scale=1, frameCycle = 2.5} = {}) {
+export class Sprite {
     
+    constructor({start_x = 0, start_y = 0, textureID = "asteroid1", scale=1, frameCycle = 2.5} = {}) {
         this.coords = { x : start_x, y : start_y}
 
         this.drawOffset = { dx : 0, dy : 0}
@@ -24,47 +23,51 @@ export function Sprite(
         this.rotation = 0;
         this.isRotated = false;
 
-        this.draw = function() {
-            var ctx = globals.gameCanvas.context;
-            var drawX = this.coords.x + this.drawOffset.dx;
-            var drawY = this.coords.y + this.drawOffset.dy;
-            
-            if (this.isRotated) {
-                ctx.save();
-                ctx.translate(drawX, drawY);
-                ctx.rotate(utils.degreesToRadians(this.rotation));
-                
-                ctx.drawImage(this.image, this.imageCoords.sx, this.imageCoords.sy, this.texture.width, this.texture.height, 
-                    0-(this.width/2), 0-(this.height/2), this.width, this.height);
-    
-                ctx.restore();
-            } else {
-                ctx.drawImage(this.image, this.imageCoords.sx, this.imageCoords.sy, this.texture.width, this.texture.height, 
-                    drawX, drawY, this.width, this.height);
-            }
-        }
-
-        this.update = function(deltaTime) {
-            // animate the rocket
-            if (this.textureFrame.update(deltaTime)) {
-                this.imageCoords.sx = this.textureFrame.frame * this.texture.width;
-            }
-        }
-
-        this.rotate = function(dDegrees) {
-            this.rotation = (this.rotation + dDegrees) % 360;
-            this.isRotated = true;
-        }
-
-        this.fixRotation = function() {
-            this.rotation = 0;
-            this.isRotated = false;
-        }
-
-        this.setOrigin = function(nRLocation) {
-            this.coords = utils.adjustOrigin(this.coords.x, this.coords.y, this.width, this.height, this.origin, nRLocation);
-            this.origin = nRLocation
-            this.drawOffset = utils.adjustDrawOffset(this.width, this.height, this.origin);
-        }
         this.origin = this.setOrigin(rLocation.center);
+    }
+    
+        
+
+    draw() {
+        var ctx = globals.gameCanvas.context;
+        var drawX = this.coords.x + this.drawOffset.dx;
+        var drawY = this.coords.y + this.drawOffset.dy;
+        
+        if (this.isRotated) {
+            ctx.save();
+            ctx.translate(drawX, drawY);
+            ctx.rotate(utils.degreesToRadians(this.rotation));
+            
+            ctx.drawImage(this.image, this.imageCoords.sx, this.imageCoords.sy, this.texture.width, this.texture.height, 
+                0-(this.width/2), 0-(this.height/2), this.width, this.height);
+
+            ctx.restore();
+        } else {
+            ctx.drawImage(this.image, this.imageCoords.sx, this.imageCoords.sy, this.texture.width, this.texture.height, 
+                drawX, drawY, this.width, this.height);
+        }
+    }
+
+    update(deltaTime) {
+        // animate the rocket
+        if (this.textureFrame.update(deltaTime)) {
+            this.imageCoords.sx = this.textureFrame.frame * this.texture.width;
+        }
+    }
+
+    rotate(dDegrees) {
+        this.rotation = (this.rotation + dDegrees) % 360;
+        this.isRotated = true;
+    }
+
+    fixRotation() {
+        this.rotation = 0;
+        this.isRotated = false;
+    }
+
+    setOrigin(nRLocation) {
+        this.coords = utils.adjustOrigin(this.coords.x, this.coords.y, this.width, this.height, this.origin, nRLocation);
+        this.origin = nRLocation
+        this.drawOffset = utils.adjustDrawOffset(this.width, this.height, this.origin);
+    }
 }

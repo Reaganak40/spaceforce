@@ -1,21 +1,21 @@
 import { Rocket } from "./rocket.js";
 import { globals } from "./globals.js";
 
-export function Hero() {
-    this.create = function() {
+export class Hero{
+    
+    constructor() {
         this.rocket = new Rocket({speed : 700, scale : 1});
         this.rocket.follow_mouse = true;
         this.rocket.restrict_y = true;
 
         this.rocket.sprite.coords.y =  globals.canvasHeight - (this.rocket.sprite.height/2) - 15;
     }
-    this.create()
 
-    this.draw = function() {
+    draw() {
         this.rocket.draw();
     }
 
-    this.update = function(deltaTime) {
+    update(deltaTime) {
         this.rocket.update(deltaTime);
     }
 }

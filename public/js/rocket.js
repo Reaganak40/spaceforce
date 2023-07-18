@@ -2,9 +2,9 @@ import {utils} from './utils.js'
 import { globals } from './globals.js'
 import { Sprite } from './sprite.js';
 
-export function Rocket({start_x = 50, start_y = 50, speed = 200, scale=1} = {})
-{
-    this.create = function() {
+export class Rocket {
+
+    constructor({start_x = 50, start_y = 50, speed = 200, scale=1} = {}) {
         this.sprite = new Sprite(
             {start_x : start_x, start_y : start_y, 
                 textureID : 'rocket', scale:scale}
@@ -14,13 +14,12 @@ export function Rocket({start_x = 50, start_y = 50, speed = 200, scale=1} = {})
         this.follow_mouse = false;
         this.restrict_y = false;
     }
-    this.create()
 
-    this.draw = function() {
+    draw() {
         this.sprite.draw();
     }
 
-    this.update = function(deltaTime) {
+    update(deltaTime) {
         
         // move the rocket
         if (this.follow_mouse && utils.coordsExist(globals.mouse.coords))

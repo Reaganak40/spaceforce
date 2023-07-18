@@ -3,16 +3,25 @@ import { globals } from './globals.js';
 import { trajectory } from './macros.js';
 import { Sprite } from './sprite.js';
 
-export function Asteroid(trajectoryType = trajectory.randomTarget)
-{
-    this.create = function() {
+export class Asteroid {
+    
+    constructor(trajectoryType = trajectory.randomTarget) {
         this.trajectory = trajectoryType;
         
         var start_y = utils.getRandomInt(-(globals.canvasHeight / 2), 0);
         
+        switch(utils.getRandomInt(1, 2)) {
+            case 1:
+                var asteroidName = 'asteroid1';
+                break;
+            case 2:
+                var asteroidName = 'asteroid2';
+                break;
+        }
+        
         this.sprite = new Sprite(
             {start_x : 0, start_y : start_y, 
-                textureID : 'asteroid1', scale:1}
+                textureID : asteroidName, scale:1}
             );
         
         var fitX = utils.getFittedRangeX(this.sprite.width);
@@ -28,13 +37,12 @@ export function Asteroid(trajectoryType = trajectory.randomTarget)
         this.speed = 300;
         this.rotationSpeed = 80;
     }
-    this.create()
     
-    this.draw = function() {
+    draw() {
         this.sprite.draw();
     }
 
-    this.update = function(deltaTime) {
+    update(deltaTime) {
         if (this.trajectory == trajectory.randomTarget) {
             this.sprite.coords.x += this.uv.dx * deltaTime * this.speed;
             this.sprite.coords.y += this.uv.dy * deltaTime * this.speed;
@@ -44,27 +52,31 @@ export function Asteroid(trajectoryType = trajectory.randomTarget)
         this.sprite.rotate(deltaTime * this.rotationSpeed);
     }
 
-    this.isOutOfRange = function() {
+    isOutOfRange() {
         return (this.sprite.coords.y - this.sprite.height) > globals.canvasHeight;
     }
 }
 
-export function AsteroidBelt({maxAsteroids = 10, frequency = 0.1, minSpeed = 90, maxSpeed = 420} = {}) {
-    this.maxAsteroids = maxAsteroids;
-    this.frequency = frequency * 100;
-    this.speedRange = { min : minSpeed, max : maxSpeed }
+export class AsteroidBelt {
+    
+    constructor({maxAsteroids = 10, frequency = 0.1, minSpeed = 90, maxSpeed = 420} = {}) {
+        this.maxAsteroids = maxAsteroids;
+        this.frequency = frequency * 100;
+        this.speedRange = { min : minSpeed, max : maxSpeed }
 
-    this.asteroids = []
+        this.asteroids = []
 
-    // the game will try to spawn an asteroid every 'spawnEpoch' seconds.
-    this.spawnEpoch = 0.3
-    this.spawnTime = this.spawnEpoch
+        // the game will try to spawn an asteroid every 'spawnEpoch' seconds.
+        this.spawnEpoch = 0.3
+        this.spawnTime = this.spawnEpoch
+    }
+    
 
-    this.draw = function() {
+    draw() {
         this.asteroids.forEach(asteroid => asteroid.draw())
     }
 
-    this.update = function(deltaTime) {
+    update(deltaTime) {
 
         this.spawnTime -= deltaTime;
 
